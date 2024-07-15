@@ -10,7 +10,7 @@ const mkdirAsync = promisify(mkdir);
 const readdirAsync = promisify(readdir);
 const rmdirAsync = promisify(rmdir);
 
-export async function extractAudio(videoPath: string, startMillis: number, finishMillis: number): Promise<void> {
+export async function extractAudio(videoPath: string, startMillis?: number, finishMillis?: number): Promise<void> {
     console.log(`Extraindo audio...`)
     const outPath = join(__dirname, 'temp', 'audio.mp4');
     

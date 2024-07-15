@@ -25,6 +25,7 @@ export async function generateFinalVideo() {
             .addInput(audioFilePath) // specify the audio file
             .outputOptions('-c:v', 'libx264') // video codec
             .outputOptions('-c:a', 'aac') // audio codec
+            .outputOptions('-pix_fmt', 'yuv420p')
             .outputOptions(['-map 0:v', '-map 1:a'])
             .outputOptions('-strict', 'experimental') // required for aac codec
             .output(videoOutputPath)

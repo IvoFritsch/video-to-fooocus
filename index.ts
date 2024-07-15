@@ -24,6 +24,7 @@ interface ImageInputParams {
   image_number?: number
   aspect_ratios_selection: string;
   save_name: string
+  image_seed?: number
   image_prompts: Array<ImagePrompt>;       // List of image prompts
 }
 
@@ -112,51 +113,52 @@ async function fileToBase64(filePath: string): Promise<string> {
 
 // Example usage
 (async () => {
-  // const now = Date.now()
-  // const frames = await extractFramesAsBase64('input/Download.mp4', 30, 0, 10000)
+  const now = Date.now()
+  const frames = await extractFramesAsBase64('input/Download.mov', 30)
   // //console.log(frames)
   // // return 
-  await extractAudio('input/Download.mp4', 0, 10000)
-  // console.log(`Extraidos ${frames.length} frames...`)
-  // console.log('Iniciando processamento...')
-  // for (let i = 0; i < frames.length; i++) {
-  //   const frameStart = Date.now()
-  //   try {
-  //     const base64 = frames[i] //await fileToBase64(`input/${i}.png`)
-  //     // console.log(base64.substring(0, 30))
-  //     const result = await imgInput({
-  //       "prompt": "a girl dancing wearing black pants and a white shirt, dark hair, beige wall on background",
-  //       async_process: false,
-  //       save_name: `${now}-${i+1}`,
-  //       aspect_ratios_selection: '288*512', // 288*512 576*1024
-  //       "image_prompts": [
-  //         {
-  //           "cn_img": base64,
-  //           "cn_stop": 0.8,
-  //           "cn_weight": 0.85,
-  //           "cn_type": "ImagePrompt"
-  //         },
-  //         {
-  //           "cn_img": base64,
-  //           "cn_stop": 1,
-  //           "cn_weight": 1,
-  //           "cn_type": "PyraCanny"
-  //         },
-  //         {
-  //           "cn_img": base64,
-  //           "cn_stop": 0.85,
-  //           "cn_weight": 0.7,
-  //           "cn_type": "FaceSwap"
-  //         }
-  //       ]
-  //     });
-  //     // console.log(result);
-  //     downloadImage(result[0].url, `output-frame-${String(i).padStart(5, '0')}.png`)
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  //   const framesLeft = frames.length - i - 1
-  //   console.log(`Restante: ${framesLeft} frames / ~${((Math.ceil(Date.now() - frameStart) * framesLeft) / 1000)} segundos`)
-  // }
+  await extractAudio('input/Download.mov')
+  console.log(`Extraidos ${frames.length} frames...`)
+  console.log('Iniciando processamento...')
+  for (let i = 0; i < frames.length; i++) {
+    const frameStart = Date.now()
+    try {
+      const base64 = frames[i] //await fileToBase64(`input/${i}.png`)
+      // console.log(base64.substring(0, 30))
+      const result = await imgInput({
+        "prompt": "a blonde girl wearing a black chess skirt, white shirt, black chess tie, white shoes, pink background",
+        async_process: false,
+        save_name: `${now}-${i+1}`,
+        image_seed: 12345,
+        aspect_ratios_selection: '576*1024', // 288*512 576*1024
+        "image_prompts": [
+          {
+            "cn_img": base64,
+            "cn_stop": 0.8,
+            "cn_weight": 0.85,
+            "cn_type": "ImagePrompt"
+          },
+          {
+            "cn_img": base64,
+            "cn_stop": 1,
+            "cn_weight": 1,
+            "cn_type": "PyraCanny"
+          },
+          {
+            "cn_img": base64,
+            "cn_stop": 0.85,
+            "cn_weight": 0.7,
+            "cn_type": "FaceSwap"
+          }
+        ]
+      });
+      // console.log(result);
+      downloadImage(result[0].url, `output-frame-${String(i).padStart(5, '0')}.png`)
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    const framesLeft = frames.length - i - 1
+    console.log(`Restante: ${framesLeft} frames / ~${((Math.ceil(Date.now() - frameStart) * framesLeft) / 1000)} segundos`)
+  }
   await generateFinalVideo();
 })();
